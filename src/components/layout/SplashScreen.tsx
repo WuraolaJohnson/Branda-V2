@@ -11,30 +11,25 @@ const SOFT_SPRING   = { type: 'spring', stiffness: 300, damping: 22 }           
 
 const LETTERS = 'BRANDA'.split('');
 
-/**
- * Removes the server-rendered #splash-cover element from the DOM.
- * This cover is what prevents the page flash before JS loads.
- */
-function removeSplashCover() {
-  const el = document.getElementById('splash-cover');
-  if (el) el.remove();
-}
-
 export const SplashScreen: React.FC = () => {
   const router = useRouter();
   const pathname = usePathname();
   const { isLoggedIn } = useAuth();
   const [phase, setPhase] = useState<'logo' | 'text' | 'done'>('logo');
+  const [isVisible, setIsVisible] = useState(true);
   const ringControls = useAnimation();
 
   useEffect(() => {
+    let isMounted = true;
+
     const seq = async () => {
       /* logo bounce-in settle */
-      await new Promise(r => setTimeout(r, 300));
+      await new Promise((r) => setTimeout(r, 350));
+      if (!isMounted) return;
 
       /* fire impact ring */
       ringControls.start({
-        scale:   [1, 3.5],
+        scale: [1, 3.5],
         opacity: [0.5, 0],
         transition: { duration: 0.35, ease: 'easeOut' },
       });
@@ -43,11 +38,11 @@ export const SplashScreen: React.FC = () => {
       setPhase('text');
 
       /* hold, then exit */
-      await new Promise(r => setTimeout(r, 550));
-      setPhase('done');
+      await new Promise((r) => setTimeout(r, 650));
+      if (!isMounted) return;
 
-      /* remove the server-rendered HTML cover */
-      removeSplashCover();
+      setPhase('done');
+      setIsVisible(false);
 
       /* After the load up effect, open to the sign in page */
       if (!isLoggedIn && pathname !== '/account/login' && pathname !== '/account/register') {
@@ -56,16 +51,21 @@ export const SplashScreen: React.FC = () => {
     };
 
     seq();
-  }, [ringControls, router, pathname, isLoggedIn]);
 
-  if (phase === 'done') return null;
+    return () => {
+      isMounted = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run once on initial mount
 
   return (
-    <motion.div
-      key="splash"
-      initial={{ opacity: 1 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: 0.3, ease: 'easeInOut' } }}
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          key="splash"
+          initial={{ opacity: 1 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0, transition: { duration: 0.4, ease: 'easeInOut' } }}
       style={{
         position: 'fixed',
         inset: 0,
@@ -233,5 +233,7 @@ export const SplashScreen: React.FC = () => {
         </AnimatePresence>
       </div>
     </motion.div>
+      )}
+    </AnimatePresence>
   );
 };

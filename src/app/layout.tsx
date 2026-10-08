@@ -59,33 +59,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${plusJakartaSans.variable}`}>
-      <head>
-        {/*
-          Inline style that hides page content until the splash is dismissed.
-          This runs at CSS parse time — before any JS loads.
-        */}
-        <style
-          dangerouslySetInnerHTML={{
-            __html: `
-              #splash-cover {
-                position: fixed;
-                inset: 0;
-                z-index: 9998;
-                background: #0d1b32;
-                pointer-events: none;
-              }
-            `,
-          }}
-        />
-      </head>
       <body className="min-h-screen flex flex-col font-sans antialiased text-brand-navy bg-brand-offwhite">
-        {/*
-          Pure server-rendered HTML overlay — paints on the very first frame,
-          before ANY JavaScript executes. The SplashScreen component removes
-          this element when the animation is complete.
-        */}
-        <div id="splash-cover" aria-hidden="true" />
-
         <AuthProvider>
           <CurrencyProvider>
             <CartProvider>
