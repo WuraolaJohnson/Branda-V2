@@ -1,239 +1,179 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
-import { motion, AnimatePresence, useAnimation } from 'framer-motion';
-
-/* ─── spring presets ─── */
-const BOUNCE_SPRING = { type: 'spring', stiffness: 500, damping: 16, mass: 0.8 } as const;
-const SOFT_SPRING   = { type: 'spring', stiffness: 300, damping: 22 }             as const;
-
-const LETTERS = 'BRANDA'.split('');
 
 export const SplashScreen: React.FC = () => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const { isLoggedIn } = useAuth();
-  const [phase, setPhase] = useState<'logo' | 'text' | 'done'>('logo');
-  const [isVisible, setIsVisible] = useState(true);
-  const ringControls = useAnimation();
+  const [isFading, setIsFading] = useState(false);
+  const [isGone, setIsGone] = useState(false);
 
   useEffect(() => {
-    let isMounted = true;
+    // Start smooth fade-out at 1.1s
+    const fadeTimer = setTimeout(() => {
+      setIsFading(true);
+    }, 1100);
 
-    const seq = async () => {
-      /* logo bounce-in settle */
-      await new Promise((r) => setTimeout(r, 350));
-      if (!isMounted) return;
-
-      /* fire impact ring */
-      ringControls.start({
-        scale: [1, 3.5],
-        opacity: [0.5, 0],
-        transition: { duration: 0.35, ease: 'easeOut' },
-      });
-
-      /* reveal text */
-      setPhase('text');
-
-      /* hold, then exit */
-      await new Promise((r) => setTimeout(r, 650));
-      if (!isMounted) return;
-
-      setPhase('done');
-      setIsVisible(false);
-
-      /* After the load up effect, open to the sign in page */
-      if (!isLoggedIn && pathname !== '/account/login' && pathname !== '/account/register') {
-        router.push('/account/login');
-      }
-    };
-
-    seq();
+    // Completely unmount from DOM at 1.5s
+    const removeTimer = setTimeout(() => {
+      setIsGone(true);
+    }, 1500);
 
     return () => {
-      isMounted = false;
+      clearTimeout(fadeTimer);
+      clearTimeout(removeTimer);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run once on initial mount
+  }, []);
+
+  if (isGone) {
+    return null;
+  }
 
   return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.div
-          key="splash"
-          initial={{ opacity: 1 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.4, ease: 'easeInOut' } }}
+    <div
+      aria-hidden="true"
+      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#0d1b32] overflow-hidden select-none transition-opacity duration-400 ease-out ${
+        isFading ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'
+      }`}
       style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 9999,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: '#0d1b32',
-        overflow: 'hidden',
+        // Guaranteed CSS-level fadeout fallback in case of delayed client hydration
+        animation: 'splashFadeOut 0.4s ease-out 1.15s forwards',
       }}
     >
-      {/* ── dot-grid texture ── */}
+      {/* Dot-grid texture overlay */}
       <div
-        aria-hidden
+        className="absolute inset-0 pointer-events-none opacity-20"
         style={{
-          position: 'absolute',
-          inset: 0,
           backgroundImage:
-            'radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px)',
-          backgroundSize: '38px 38px',
-          pointerEvents: 'none',
+            'radial-gradient(circle, rgba(255,255,255,0.2) 1px, transparent 1px)',
+          backgroundSize: '36px 36px',
         }}
       />
 
-      {/* ── ambient glow ── */}
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          inset: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          pointerEvents: 'none',
-        }}
-      >
+      {/* Ambient coral glow behind logo */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div
-          style={{
-            width: 560,
-            height: 560,
-            borderRadius: '50%',
-            background:
-              'radial-gradient(circle, rgba(255,90,70,0.18) 0%, transparent 68%)',
-            filter: 'blur(30px)',
-          }}
+          className="w-[520px] h-[520px] rounded-full bg-brand-coral/20 blur-[90px]"
+          style={{ animation: 'b2GlowPulse 2s ease-in-out infinite' }}
         />
       </div>
 
-      {/* ── centre stage ── */}
-      <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 28 }}>
-
-        {/* impact ring */}
-        <motion.div
-          aria-hidden
-          animate={ringControls}
+      {/* Center Stage */}
+      <div className="relative flex flex-col items-center gap-7 z-10">
+        {/* Expanding Impact Ring */}
+        <div
+          className="absolute w-24 h-24 rounded-[28px] border-2 border-brand-coral/60 pointer-events-none"
           style={{
-            position: 'absolute',
-            width: 96,
-            height: 96,
-            borderRadius: 28,
-            border: '3px solid rgba(255,90,70,0.6)',
-            pointerEvents: 'none',
-            opacity: 0,
+            animation: 'ringPing 1.2s cubic-bezier(0, 0, 0.2, 1) forwards',
           }}
         />
 
-        {/* ── logo badge ── */}
-        <motion.div
-          initial={{ y: -280, opacity: 0, rotate: -6, scale: 0.85 }}
-          animate={{ y: 0,    opacity: 1, rotate:  0, scale: 1   }}
-          transition={{ ...BOUNCE_SPRING, delay: 0.02 }}
+        {/* B2 Logo Badge */}
+        <div
+          className="w-24 h-24 rounded-[28px] bg-white flex items-center justify-center shadow-2xl transition-all duration-700 ease-out transform"
           style={{
-            width: 96,
-            height: 96,
-            borderRadius: 28,
-            background: '#ffffff',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            animation: 'b2Bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
             boxShadow:
-              '0 0 0 0 rgba(255,90,70,0), 0 30px 60px rgba(0,0,0,0.45), 0 0 80px rgba(255,90,70,0.35)',
+              '0 20px 50px rgba(0,0,0,0.5), 0 0 60px rgba(255,90,70,0.3)',
           }}
         >
-          <span
-            style={{
-              fontFamily: 'var(--font-display, sans-serif)',
-              fontWeight: 900,
-              fontSize: '2.65rem',
-              color: '#0d1b32',
-              lineHeight: 1,
-              letterSpacing: '-0.04em',
-              userSelect: 'none',
-            }}
-          >
-            B<span style={{ color: '#ff5a46', fontSize: '1.5rem' }}>2</span>
+          <span className="font-display font-black text-4xl text-brand-navy leading-none tracking-tight">
+            B<span className="text-brand-coral text-2xl font-bold ml-0.5">2</span>
           </span>
-        </motion.div>
+        </div>
 
-        {/* ── staggered letter reveal ── */}
-        <AnimatePresence>
-          {phase === 'text' && (
-            <motion.div
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}
-            >
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 2 }}>
-                {LETTERS.map((letter, i) => (
-                  <motion.span
-                    key={letter + i}
-                    initial={{ y: 30, opacity: 0, scale: 0.7 }}
-                    animate={{ y: 0,  opacity: 1, scale: 1   }}
-                    transition={{ ...BOUNCE_SPRING, delay: i * 0.04 }}
-                    style={{
-                      fontFamily: 'var(--font-display, sans-serif)',
-                      fontWeight: 800,
-                      fontSize: '2.4rem',
-                      color: '#ffffff',
-                      letterSpacing: '-0.02em',
-                      lineHeight: 1,
-                      display: 'inline-block',
-                    }}
-                  >
-                    {letter}
-                  </motion.span>
-                ))}
+        {/* BRANDA V2 Letters & Subtitle */}
+        <div
+          className="flex flex-col items-center gap-1.5 transition-all duration-500 ease-out"
+          style={{
+            animation: 'b2FadeIn 0.5s ease-out 0.35s forwards',
+            opacity: 0,
+          }}
+        >
+          <div className="flex items-baseline gap-1">
+            <span className="font-display font-black text-3xl sm:text-4xl text-white tracking-wider">
+              BRANDA
+            </span>
+            <span className="font-sans font-bold text-xs sm:text-sm text-brand-coral tracking-widest uppercase ml-1.5 px-1.5 py-0.5 rounded bg-brand-coral/10 border border-brand-coral/20">
+              V2
+            </span>
+          </div>
 
-                <motion.span
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ ...BOUNCE_SPRING, delay: LETTERS.length * 0.04 + 0.03 }}
-                  style={{
-                    fontFamily: 'var(--font-sans, sans-serif)',
-                    fontWeight: 700,
-                    fontSize: '0.7rem',
-                    color: '#ff5a46',
-                    letterSpacing: '0.22em',
-                    textTransform: 'uppercase',
-                    marginLeft: 8,
-                    alignSelf: 'center',
-                    display: 'inline-block',
-                  }}
-                >
-                  V2
-                </motion.span>
-              </div>
-
-              <motion.p
-                initial={{ y: 12, opacity: 0 }}
-                animate={{ y: 0,  opacity: 1 }}
-                transition={{ ...SOFT_SPRING, delay: 0.3 }}
-                style={{
-                  fontFamily: 'var(--font-sans, sans-serif)',
-                  fontWeight: 600,
-                  fontSize: '0.6rem',
-                  color: 'rgba(255,255,255,0.38)',
-                  letterSpacing: '0.32em',
-                  textTransform: 'uppercase',
-                  margin: 0,
-                }}
-              >
-                Branding Ecosystem
-              </motion.p>
-            </motion.div>
-          )}
-        </AnimatePresence>
+          <p className="font-sans font-semibold text-[10px] sm:text-xs text-white/40 tracking-[0.3em] uppercase">
+            Branding Ecosystem
+          </p>
+        </div>
       </div>
-    </motion.div>
-      )}
-    </AnimatePresence>
+
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+        @keyframes b2Bounce {
+          0% {
+            opacity: 0;
+            transform: translateY(-120px) scale(0.8) rotate(-4deg);
+          }
+          60% {
+            opacity: 1;
+            transform: translateY(10px) scale(1.05) rotate(1deg);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1) rotate(0deg);
+          }
+        }
+        @keyframes ringPing {
+          0% {
+            transform: scale(0.8);
+            opacity: 0.8;
+          }
+          75% {
+            transform: scale(2.8);
+            opacity: 0;
+          }
+          100% {
+            transform: scale(3.2);
+            opacity: 0;
+          }
+        }
+        @keyframes b2FadeIn {
+          0% {
+            opacity: 0;
+            transform: translateY(14px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @keyframes b2GlowPulse {
+          0%,
+          100% {
+            opacity: 0.2;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.35;
+            transform: scale(1.08);
+          }
+        }
+        @keyframes splashFadeOut {
+          0% {
+            opacity: 1;
+            visibility: visible;
+          }
+          95% {
+            opacity: 0;
+            visibility: visible;
+            pointer-events: none;
+          }
+          100% {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+          }
+        }
+      `,
+        }}
+      />
+    </div>
   );
 };

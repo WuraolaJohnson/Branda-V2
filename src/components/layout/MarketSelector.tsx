@@ -7,6 +7,7 @@ import { MarketCode } from '@/data/types';
 import { useCurrency } from '@/context/CurrencyContext';
 import { ChevronDown, Globe, Coins, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { FlagIcon } from '@/components/ui/FlagIcon';
 
 interface MarketSelectorProps {
   currentMarket: MarketCode;
@@ -92,7 +93,7 @@ export const MarketSelector: React.FC<MarketSelectorProps> = ({
                     : 'border-brand-navy/10 hover:border-brand-navy/20 hover:bg-brand-navy/5 text-brand-navy'
                 )}
               >
-                <span className="text-base">{m.flag}</span>
+                <FlagIcon countryCode={code} className="w-5 h-3.5 flex-shrink-0" />
                 <div className="flex flex-col min-w-0">
                   <span className="leading-tight truncate">{code === 'us' ? 'USA' : 'Nigeria'}</span>
                   <span
@@ -139,7 +140,7 @@ export const MarketSelector: React.FC<MarketSelectorProps> = ({
                 )}
               >
                 <div className="flex items-center gap-1.5 min-w-0">
-                  <span className="text-sm flex-shrink-0">{c.flag}</span>
+                  <FlagIcon countryCode={c.code} className="w-4.5 h-3 flex-shrink-0" />
                   <span className="text-[11px] truncate">
                     {c.code} ({c.symbol})
                   </span>
@@ -170,17 +171,20 @@ export const MarketSelector: React.FC<MarketSelectorProps> = ({
         aria-haspopup="true"
         aria-label="Country and Currency Selector"
       >
-        <div className="flex items-center gap-2">
-          <span className="text-sm leading-none flex items-center">{currentMarketData.flag}</span>
-          <span className={cn('font-bold leading-none', inline ? 'inline' : 'hidden md:inline')}>
+        <div className="flex items-center gap-1.5">
+          <FlagIcon countryCode={currentMarket} className="w-4.5 h-3.5 flex-shrink-0 shadow-2xs" />
+          <span className="font-extrabold text-xs text-brand-navy leading-none flex items-center">
+            {currentMarket.toUpperCase()}
+          </span>
+          <span className={cn('font-medium text-xs leading-none flex items-center text-brand-navy/80', inline ? 'inline' : 'hidden md:inline')}>
             {currentMarket === 'us' ? 'USA' : 'Nigeria'}
           </span>
-          <span className="text-[11px] font-semibold leading-none text-brand-coral bg-brand-coral/10 px-1.5 py-0.5 rounded-md flex items-center">
+          <span className="text-[11px] font-semibold leading-none text-brand-coral bg-brand-coral/10 px-1.5 py-0.5 rounded-md flex items-center justify-center">
             {currency} ({currentCurrencyData.symbol})
           </span>
         </div>
         <ChevronDown
-          className={cn('w-3.5 h-3.5 text-brand-navy/60 transition-transform duration-200', {
+          className={cn('w-3.5 h-3.5 text-brand-navy/60 transition-transform duration-200 flex-shrink-0', {
             'rotate-180': isOpen,
           })}
         />

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/Button';
-import { Mail, Lock, LogIn, Sparkles, Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import { Mail, Lock, LogIn, Sparkles, Eye, EyeOff } from 'lucide-react';
 
 export const LoginForm: React.FC = () => {
   const router = useRouter();
@@ -22,7 +22,7 @@ export const LoginForm: React.FC = () => {
     setTimeout(() => {
       login(email || 'demo@branda.com');
       setIsLoading(false);
-      router.push('/account');
+      router.push('/ng');
     }, 400);
   };
 
@@ -31,7 +31,7 @@ export const LoginForm: React.FC = () => {
     setTimeout(() => {
       loginDemo();
       setIsDemoLoading(false);
-      router.push('/account');
+      router.push('/ng');
     }, 350);
   };
 
@@ -147,16 +147,6 @@ export const LoginForm: React.FC = () => {
             Create Account
           </Link>
         </p>
-
-        <div className="pt-2 flex items-center justify-center gap-4 text-[11px] text-brand-muted">
-          <span className="flex items-center gap-1">
-            <ShieldCheck className="w-3.5 h-3.5 text-brand-mint-text" /> 256-bit SSL Secure
-          </span>
-          <span>•</span>
-          <Link href="/ng" className="hover:text-brand-navy transition-colors">
-            Return to Store
-          </Link>
-        </div>
       </div>
     </div>
   );

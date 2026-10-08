@@ -28,7 +28,7 @@ export const RegisterForm: React.FC = () => {
     setTimeout(() => {
       register(fullName, email, phone);
       setIsLoading(false);
-      router.push('/account');
+      router.push('/ng');
     }, 500);
   };
 
