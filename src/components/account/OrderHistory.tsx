@@ -1,14 +1,35 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
 import { useAuth } from '@/context/AuthContext';
 import { formatCurrency } from '@/data/markets';
 import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
 import { ShoppingBag, Clock, PackageCheck, Truck } from 'lucide-react';
 
 export const OrderHistory: React.FC = () => {
-  const { orders } = useAuth();
+  const { orders, isLoggedIn } = useAuth();
+
+  if (!isLoggedIn) {
+    return (
+      <div className="bg-white p-12 rounded-3xl border border-brand-navy/10 text-center shadow-soft space-y-4 max-w-lg mx-auto">
+        <ShoppingBag className="w-12 h-12 text-brand-coral mx-auto" />
+        <div>
+          <h3 className="text-lg font-bold text-brand-navy font-display">Sign In to View Orders</h3>
+          <p className="text-xs text-brand-muted mt-1">
+            Sign in with your enterprise account or try our 1-click demo account to review live mock orders and production milestones.
+          </p>
+        </div>
+        <Link href="/account/login" className="inline-block">
+          <Button variant="coral" size="md">
+            Sign In / Demo Account
+          </Button>
+        </Link>
+      </div>
+    );
+  }
 
   if (orders.length === 0) {
     return (

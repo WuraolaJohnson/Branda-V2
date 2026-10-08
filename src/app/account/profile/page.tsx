@@ -1,17 +1,34 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/Button';
 import { User, Mail, Phone, Building, Save } from 'lucide-react';
 
 export default function AccountProfilePage() {
-  const { user } = useAuth();
-  const [fullName, setFullName] = useState(user?.fullName || 'Tunde Bakare');
-  const [email, setEmail] = useState(user?.email || 'tunde.bakare@brandacompany.com');
-  const [phone, setPhone] = useState(user?.phone || '+234 803 555 0192');
-  const [company, setCompany] = useState(user?.companyName || 'Apex Creative Studio');
+  const router = useRouter();
+  const { user, isLoggedIn } = useAuth();
+  const [fullName, setFullName] = useState(user?.fullName || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [phone, setPhone] = useState(user?.phone || '');
+  const [company, setCompany] = useState(user?.companyName || '');
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      router.push('/account/login');
+    } else if (user) {
+      setFullName(user.fullName);
+      setEmail(user.email);
+      setPhone(user.phone);
+      setCompany(user.companyName || '');
+    }
+  }, [isLoggedIn, user, router]);
+
+  if (!isLoggedIn) {
+    return null;
+  }
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();

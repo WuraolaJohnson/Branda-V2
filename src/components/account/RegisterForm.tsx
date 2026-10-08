@@ -138,11 +138,19 @@ export const RegisterForm: React.FC = () => {
         </Button>
       </form>
 
-      <div className="pt-4 border-t border-brand-navy/10 text-center text-xs text-brand-muted">
-        Already registered?{' '}
-        <Link href="/account/login" className="font-bold text-brand-navy hover:text-brand-coral underline">
-          Sign In
-        </Link>
+      <div className="pt-4 border-t border-brand-navy/10 space-y-2 text-center text-xs text-brand-muted">
+        <div>
+          Already registered?{' '}
+          <Link href="/account/login" className="font-bold text-brand-navy hover:text-brand-coral underline">
+            Sign In
+          </Link>
+        </div>
+        <div>
+          Just exploring?{' '}
+          <Link href="/account/login" className="font-bold text-brand-coral hover:underline">
+            Use Enterprise Demo Account →
+          </Link>
+        </div>
       </div>
     </div>
   );

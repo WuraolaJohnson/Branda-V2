@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { MarketCode } from '@/data/types';
 import { CATEGORIES } from '@/data/categories';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 import {
   X,
   Search,
@@ -45,6 +46,7 @@ const CATEGORY_ICON_MAP: Record<string, LucideIcon> = {
 export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, marketCode }) => {
   const router = useRouter();
   const { itemCount } = useCart();
+  const { user, isLoggedIn } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
 
   if (!isOpen) return null;
@@ -209,12 +211,19 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, marketC
               <span>About Branda V2</span>
             </Link>
             <Link
-              href="/account"
+              href={isLoggedIn ? "/account" : "/account/login"}
               onClick={onClose}
-              className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-brand-navy/5 transition-colors"
+              className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-brand-navy/5 hover:bg-brand-coral/10 transition-colors"
             >
-              <User className="w-4 h-4 text-brand-coral" />
-              <span>Customer Account & Orders</span>
+              <div className="flex items-center gap-2.5">
+                <User className="w-4 h-4 text-brand-coral" />
+                <span className="font-bold text-brand-navy">
+                  {isLoggedIn ? `My Account (${user?.fullName?.split(' ')[0]})` : 'Sign In / Demo Access'}
+                </span>
+              </div>
+              <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-white text-brand-coral border border-brand-navy/10">
+                {isLoggedIn ? 'Dashboard' : 'Demo Available'}
+              </span>
             </Link>
           </div>
         </div>

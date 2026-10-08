@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
@@ -9,7 +10,23 @@ import { OrderHistory } from '@/components/account/OrderHistory';
 import { LayoutDashboard, ShoppingBag, MapPin, Building, ArrowRight } from 'lucide-react';
 
 export default function AccountDashboardPage() {
-  const { user, orders } = useAuth();
+  const { user, isLoggedIn, orders } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      router.push('/account/login');
+    }
+  }, [isLoggedIn, router]);
+
+  if (!isLoggedIn) {
+    return (
+      <div className="py-20 text-center space-y-3">
+        <div className="w-8 h-8 border-3 border-brand-coral border-t-transparent rounded-full animate-spin mx-auto" />
+        <p className="text-xs text-brand-muted">Directing to Sign In...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">

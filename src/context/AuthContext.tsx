@@ -10,6 +10,7 @@ interface AuthContextType {
   isLoggedIn: boolean;
   orders: Order[];
   login: (email: string) => boolean;
+  loginDemo: () => boolean;
   logout: () => void;
   register: (fullName: string, email: string, phone: string) => boolean;
   addOrder: (order: Order) => void;
@@ -21,7 +22,7 @@ const AUTH_STORAGE_KEY = 'branda_v2_user';
 const ORDERS_STORAGE_KEY = 'branda_v2_orders';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<UserProfile | null>(MOCK_USER);
+  const [user, setUser] = useState<UserProfile | null>(null);
   const [orders, setOrders] = useState<Order[]>(INITIAL_MOCK_ORDERS);
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -58,12 +59,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [user, orders, isInitialized]);
 
   const login = (email: string) => {
-    // Mock login logic
     const loggedInUser: UserProfile = {
       ...MOCK_USER,
       email: email || MOCK_USER.email,
+      fullName: email.toLowerCase().includes('demo')
+        ? 'Demo Enterprise User'
+        : email.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
     };
     setUser(loggedInUser);
+    return true;
+  };
+
+  const loginDemo = () => {
+    const demoUser: UserProfile = {
+      ...MOCK_USER,
+      fullName: 'Demo Enterprise User',
+      email: 'demo@branda.com',
+      companyName: 'Apex Creative Studio (Demo)',
+    };
+    setUser(demoUser);
     return true;
   };
 
@@ -95,6 +109,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoggedIn: !!user,
         orders,
         login,
+        loginDemo,
         logout,
         register,
         addOrder,

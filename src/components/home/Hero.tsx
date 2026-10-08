@@ -65,7 +65,7 @@ export const Hero: React.FC<HeroProps> = ({ marketCode }) => {
                 <Sparkles className="w-4 h-4 text-brand-coral" />
               </motion.span>
               <span className="text-xs font-bold text-brand-navy uppercase tracking-wider">
-                {market.name} Branding Platform {market.flag}
+                All-in-One Branding & Print Ecosystem
               </span>
             </motion.div>
 
@@ -165,22 +165,6 @@ export const Hero: React.FC<HeroProps> = ({ marketCode }) => {
                   <p className="text-xs text-white/80">Logos, stationeries & complete design systems</p>
                 </div>
               </div>
-
-              {/* Floating Badge Card 1 — uses float-medium for different rhythm */}
-              <motion.div
-                initial={{ opacity: 0, x: -30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.6, type: 'spring' }}
-                className="absolute -top-6 -left-6 bg-white p-4 rounded-2xl shadow-elevated border border-brand-navy/10 flex items-center gap-3 animate-float-medium hidden sm:flex"
-              >
-                <div className="w-10 h-10 rounded-xl bg-brand-coral/20 flex items-center justify-center text-brand-coral font-bold text-sm tracking-tighter">
-                  ₦ $ £ CA$
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-brand-navy">Multi-Market Pricing</div>
-                  <div className="text-[11px] text-brand-muted">NGN, USD, GBP & CAD Adapted</div>
-                </div>
-              </motion.div>
 
               {/* Floating Badge Card 2 — offset float animation */}
               <motion.div

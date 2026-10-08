@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 import { MarketCode } from '@/data/types';
 import { MarketSelector } from './MarketSelector';
 import { MegaMenu } from './MegaMenu';
@@ -24,6 +25,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ marketCode }) => {
   const { itemCount } = useCart();
+  const { user, isLoggedIn } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -192,14 +194,30 @@ export const Navbar: React.FC<NavbarProps> = ({ marketCode }) => {
                 {/* Market & Currency Selector */}
                 <MarketSelector currentMarket={marketCode} />
 
-                {/* Account Link */}
-                <Link
-                  href="/account"
-                  className="p-2 text-brand-navy hover:text-brand-coral hover:bg-brand-navy/5 rounded-xl transition-colors flex items-center gap-1 focus:outline-none"
-                  aria-label="Account"
-                >
-                  <User className="w-5 h-5" />
-                </Link>
+                {/* Account / Sign In Link */}
+                {isLoggedIn ? (
+                  <Link
+                    href="/account"
+                    className="flex items-center gap-2 p-1.5 sm:px-2.5 sm:py-1.5 text-brand-navy hover:text-brand-coral hover:bg-brand-navy/5 rounded-xl transition-all focus:outline-none"
+                    aria-label="My Account"
+                  >
+                    <div className="w-7 h-7 rounded-full bg-brand-coral/10 border border-brand-coral/30 flex items-center justify-center text-[11px] font-bold text-brand-coral">
+                      {user?.fullName ? user.fullName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'ME'}
+                    </div>
+                    <span className="hidden xl:inline text-xs font-bold text-brand-navy">
+                      {user?.fullName?.split(' ')[0] || 'Account'}
+                    </span>
+                  </Link>
+                ) : (
+                  <Link
+                    href="/account/login"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-navy hover:text-brand-coral bg-brand-offwhite hover:bg-brand-coral/10 border border-brand-navy/15 hover:border-brand-coral/30 rounded-xl transition-all shadow-2xs focus:outline-none"
+                    aria-label="Sign In"
+                  >
+                    <User className="w-3.5 h-3.5 text-brand-coral" />
+                    <span>Sign In</span>
+                  </Link>
+                )}
 
                 {/* Cart Button */}
                 <Link
