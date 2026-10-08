@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 
 /* ─── spring presets ─── */
@@ -19,6 +21,9 @@ function removeSplashCover() {
 }
 
 export const SplashScreen: React.FC = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { isLoggedIn } = useAuth();
   const [phase, setPhase] = useState<'logo' | 'text' | 'done'>('logo');
   const ringControls = useAnimation();
 
@@ -43,10 +48,15 @@ export const SplashScreen: React.FC = () => {
 
       /* remove the server-rendered HTML cover */
       removeSplashCover();
+
+      /* After the load up effect, open to the sign in page */
+      if (!isLoggedIn && pathname !== '/account/login' && pathname !== '/account/register') {
+        router.push('/account/login');
+      }
     };
 
     seq();
-  }, [ringControls]);
+  }, [ringControls, router, pathname, isLoggedIn]);
 
   if (phase === 'done') return null;
 
