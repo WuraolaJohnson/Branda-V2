@@ -70,10 +70,10 @@ export const Navbar: React.FC<NavbarProps> = ({ marketCode }) => {
       <header
         onMouseLeave={() => setShowMegaMenu(false)}
         className={cn(
-          'sticky top-0 z-40 w-full transition-all duration-300',
+          'sticky top-0 z-50 w-full transition-all duration-300',
           isScrolled
             ? 'bg-white/95 backdrop-blur-md border-b border-brand-navy/10 shadow-soft py-3'
-            : 'bg-brand-offwhite border-b border-brand-navy/5 py-4'
+            : 'bg-brand-offwhite/95 backdrop-blur-sm border-b border-brand-navy/5 py-4'
         )}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

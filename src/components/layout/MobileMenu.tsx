@@ -58,7 +58,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, marketC
   };
 
   return (
-    <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Mobile Navigation Menu">
+    <div className="fixed inset-0 z-[60] lg:hidden" role="dialog" aria-modal="true" aria-label="Mobile Navigation Menu">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-brand-navy/60 backdrop-blur-sm animate-in fade-in duration-200"
@@ -111,8 +111,8 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, marketC
                 <Globe className="w-3.5 h-3.5 text-brand-coral" /> Country & Currency
               </span>
             </div>
-            <div className="flex items-center justify-between pt-1">
-              <MarketSelector currentMarket={marketCode} />
+            <div className="pt-0.5">
+              <MarketSelector currentMarket={marketCode} inline className="w-full" />
             </div>
           </div>
 
